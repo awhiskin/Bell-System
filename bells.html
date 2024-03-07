@@ -2,10 +2,15 @@
 <html>
 <head>
     <title>Bells</title>
-    <script src="alarm.js"></script>
+    <script src="bells.js"></script>
     <style>
         html {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            max-width: 600px;
+            padding: 10px 20px;
         }
 
         code {
@@ -59,17 +64,17 @@
 
     <h3>Current time is: <span id="clock" style="color: red;"></span></h3>
 
-    <label for="alarmTime">Set Alarm: </label>
-    <input type="time" id="alarmTime" style="text-transform: uppercase;">
-    <label for="alarmSound">Sound: </label>
-    <select id="alarmSound"></select>
-    <button id="addAlarmButton">Add Alarm</button>
-    <button id="clearAllAlarmsButton">Clear All Alarms</button>
+    <label for="bellTime">Set Bell: </label>
+    <input type="time" id="bellTime" style="text-transform: uppercase;">
+    <label for="bellSound">Sound: </label>
+    <select id="bellSound"></select>
+    <button id="addBellButton">Add Bell</button>
+    <button id="clearAllBellsButton">Clear All Bells</button>
 
     <hr>
 
-    <!-- <ul id="alarmList"></ul> -->
-    <table id="alarmList">
+    <!-- <ul id="bellList"></ul> -->
+    <table id="bellList">
         <tbody>
             <tr>
                 <th>Time</th>

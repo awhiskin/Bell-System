@@ -1,7 +1,7 @@
-let alarms = [];
+let bells = [];
 let availableSounds = ['chime01.wav', 'chime02.wav'];
 
-class Alarm {
+class Bell {
     constructor(time, sound) {
         this.time = time;
         this.sound = sound;
@@ -11,19 +11,19 @@ class Alarm {
 
 	schedule() {
 		let now = new Date();
-		let alarmDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), this.time.split(':')[0], this.time.split(':')[1]);
+		let bellDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), this.time.split(':')[0], this.time.split(':')[1]);
 
-		if (now > alarmDate) {
-			alarmDate.setDate(alarmDate.getDate() + 1);
+		if (now > bellDate) {
+			bellDate.setDate(bellDate.getDate() + 1);
 		}
 
-		let timeToAlarm = alarmDate - now;
+		let timeToBell = bellDate - now;
 		this.timeout = setTimeout(() => {
 			this.audio.play();
-			updateAlarmList();
-			saveAlarms();
+			updateBellList();
+			saveBells();
 			this.schedule();
-		}, timeToAlarm);
+		}, timeToBell);
 	}
 
     cancel() {
@@ -31,60 +31,60 @@ class Alarm {
     }
 }
 
-function saveAlarms() {
-    let alarmsData = alarms.map(alarm => ({time: alarm.time, sound: alarm.sound}));
-    localStorage.setItem('alarms', JSON.stringify(alarmsData));
+function saveBells() {
+    let bellsData = bells.map(bell => ({time: bell.time, sound: bell.sound}));
+    localStorage.setItem('bells', JSON.stringify(bellsData));
 }
 
-function loadAlarms() {
-    let alarmsData = JSON.parse(localStorage.getItem('alarms')) || [];
-    alarms = alarmsData.map(data => {
-        let alarm = new Alarm(data.time, data.sound);
-        if (!alarm.triggered) {
-            alarm.schedule();
+function loadBells() {
+    let bellsData = JSON.parse(localStorage.getItem('bells')) || [];
+    bells = bellsData.map(data => {
+        let bell = new Bell(data.time, data.sound);
+        if (!bell.triggered) {
+            bell.schedule();
         }
-        return alarm;
+        return bell;
     });
 }
 
-function sortAlarms() {
-    alarms.sort((a, b) => a.time.localeCompare(b.time));
+function sortBells() {
+    bells.sort((a, b) => a.time.localeCompare(b.time));
 }
 
 function refreshGUI() {
-	sortAlarms();
-	updateAlarmList();
+	sortBells();
+	updateBellList();
 }
 
-function addAlarm() {
-	let alarmTime = document.getElementById('alarmTime').value;
-	let alarmSound = document.getElementById('alarmSound').value;
+function addBell() {
+	let bellTime = document.getElementById('bellTime').value;
+	let bellSound = document.getElementById('bellSound').value;
 	
-	if (alarms.some(alarm => alarm.time === alarmTime) || (alarmTime === undefined || alarmTime === "")) {
+	if (bells.some(bell => bell.time === bellTime) || (bellTime === undefined || bellTime === "")) {
 		return;
 	}
-	let alarm = new Alarm(alarmTime, alarmSound);
-	alarm.schedule();
-	alarms.push(alarm);
-	sortAlarms();
-	saveAlarms();
-	updateAlarmList();
+	let bell = new Bell(bellTime, bellSound);
+	bell.schedule();
+	bells.push(bell);
+	sortBells();
+	saveBells();
+	updateBellList();
 }
 
-function clearAllAlarms() {
-	if (alarms.length === 0) { return; }
+function clearAllBells() {
+	if (bells.length === 0) { return; }
 	
-	if (window.confirm("Are you sure? This will clear all alarms.") == true) {
-		alarms.forEach(alarm => alarm.cancel());
-		alarms = [];
-		saveAlarms();
-		updateAlarmList();
+	if (window.confirm("Are you sure? This will clear all bells.") == true) {
+		bells.forEach(bell => bell.cancel());
+		bells = [];
+		saveBells();
+		updateBellList();
 	}
 }
 
-function updateAlarmList() {
-	let alarmList = document.getElementById('alarmList');
-	alarmList.innerHTML = '';
+function updateBellList() {
+	let bellList = document.getElementById('bellList');
+	bellList.innerHTML = '';
 
 	let tableHeaderRow = document.createElement('tr');
 
@@ -101,15 +101,15 @@ function updateAlarmList() {
 	tableHeaderColumn3.className = 'deleteColumn';
 	
 	tableHeaderRow.append(tableHeaderColumn1, tableHeaderColumn2, tableHeaderColumn3);
-	alarmList.appendChild(tableHeaderRow);
+	bellList.appendChild(tableHeaderRow);
 
 	let now = new Date();
 	let currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-	for (let i = 0; i < alarms.length; i++) {
+	for (let i = 0; i < bells.length; i++) {
 		let listItem = document.createElement('tr');
 
-		let timeParts = alarms[i].time.split(':');
+		let timeParts = bells[i].time.split(':');
 		let hours = timeParts[0] % 12 || 12;
 		let minutes = timeParts[1];
 		let ampm = timeParts[0] >= 12 ? 'PM' : 'AM';
@@ -121,7 +121,7 @@ function updateAlarmList() {
 
 		listItem.append(timeElement)
 
-		if (alarms[i].time <= currentTime) {
+		if (bells[i].time <= currentTime) {
 			listItem.classList.add('inactive')
 			listItem.classList.remove('active')
 		} else {
@@ -131,7 +131,7 @@ function updateAlarmList() {
 
 		let soundElement = document.createElement('td')
 		let soundItem = document.createElement('span')
-		soundItem.textContent = alarms[i].sound
+		soundItem.textContent = bells[i].sound
 		soundElement.append(soundItem)
 		listItem.append(soundElement)
 
@@ -139,42 +139,42 @@ function updateAlarmList() {
 		let deleteButton = document.createElement('button');
 		deleteButton.textContent = 'Delete';
 		deleteButton.onclick = function() {
-			if (confirm("Are you sure you wish to delete this alarm for " + hours + ':' + minutes + ' ' + ampm + "?")) {
-				alarms[i].cancel();
-				alarms.splice(i, 1);
-				sortAlarms();
-				saveAlarms();
-				updateAlarmList();
+			if (confirm("Are you sure you wish to delete this bell for " + hours + ':' + minutes + ' ' + ampm + "?")) {
+				bells[i].cancel();
+				bells.splice(i, 1);
+				sortBells();
+				saveBells();
+				updateBellList();
 			}
 		};
 		deleteElement.append(deleteButton)
 		listItem.append(deleteElement)
 
-		alarmList.appendChild(listItem);
+		bellList.appendChild(listItem);
 	}
 }
 
 window.onload = function() {
-    let select = document.getElementById('alarmSound');
+    let select = document.getElementById('bellSound');
     for (let i = 0; i < availableSounds.length; i++) {
         let option = document.createElement('option');
         option.value = availableSounds[i];
         option.text = availableSounds[i];
         select.appendChild(option);
     }
-	loadAlarms();
-	sortAlarms();
-	updateAlarmList();
+	loadBells();
+	sortBells();
+	updateBellList();
 	setInterval(refreshGUI, 15000);
-    document.querySelector('#addAlarmButton').onclick = addAlarm;
-    document.querySelector('#clearAllAlarmsButton').onclick = clearAllAlarms;
+    document.querySelector('#addBellButton').onclick = addBell;
+    document.querySelector('#clearAllBellsButton').onclick = clearAllBells;
 	
-	// Set alarmTime input field value to the current time plus 1 minute
+	// Set bellTime input field value to the current time plus 1 minute
     let now = new Date();
     now.setMinutes(now.getMinutes() + 1);
     let hours = now.getHours().toString().padStart(2, '0');
     let minutes = now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('alarmTime').value = hours + ':' + minutes;
+    document.getElementById('bellTime').value = hours + ':' + minutes;
 
 	displayTime();
 	setInterval(displayTime, 100);
