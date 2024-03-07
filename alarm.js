@@ -1,3 +1,6 @@
+let alarms = [];
+let availableSounds = ['chime01.wav', 'chime02.wav'];
+
 class Alarm {
     constructor(time, sound) {
         this.time = time;
@@ -27,9 +30,6 @@ class Alarm {
         clearTimeout(this.timeout);
     }
 }
-
-let alarms = [];
-let availableSounds = ['chime01.wav', 'chime02.wav'];
 
 function saveAlarms() {
     let alarmsData = alarms.map(alarm => ({time: alarm.time, sound: alarm.sound}));
