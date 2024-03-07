@@ -1,17 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Daily Alarm</title>
+    <title>Bells</title>
     <script src="alarm.js"></script>
+    <style>
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        code {
+            background-color: #dfdfdf;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .inactive span, code {
+            color: #888;
+        }
+
+        table {
+            min-width: 250px;
+            text-align: left;
+        }
+
+        table, tr, td, th {
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+
+        td, th {
+            padding: 5px;
+        }
+
+        .timeColumn {
+            min-width: 120px;
+        }
+
+        .soundColumn {
+            min-width: 120px;
+        }
+
+        .deleteColumn {
+            min-width: 60px;
+        }
+
+        .inactive td {
+            background-color: #ffdede;
+        }
+
+        .active td {
+            background-color: #deffe7;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Daily Alarm</h1>
-    <label for="alarmTime">Set Alarm (12 hour format): </label>
-    <input type="time" id="alarmTime">
+    <h1>Bells</h1>
+
+    <h3>Current time is: <span id="clock" style="color: red;"></span></h3>
+
+    <label for="alarmTime">Set Alarm: </label>
+    <input type="time" id="alarmTime" style="text-transform: uppercase;">
     <label for="alarmSound">Sound: </label>
     <select id="alarmSound"></select>
     <button id="addAlarmButton">Add Alarm</button>
     <button id="clearAllAlarmsButton">Clear All Alarms</button>
-    <ul id="alarmList"></ul>
+
+    <hr>
+
+    <!-- <ul id="alarmList"></ul> -->
+    <table id="alarmList">
+        <tbody>
+            <tr>
+                <th>Time</th>
+                <th>Sound</th>
+                <th>Delete?</th>
+            </tr>
+            <tr>
+                <td>5:30 PM</td>
+                <td><code>xyz.wav</code></td>
+                <td><button>Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

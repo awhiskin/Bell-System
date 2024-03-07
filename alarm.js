@@ -60,7 +60,7 @@ function addAlarm() {
 	let alarmTime = document.getElementById('alarmTime').value;
 	let alarmSound = document.getElementById('alarmSound').value;
 	
-	if (alarms.some(alarm => alarm.time === alarmTime) || (alarmTime === undefined || alarmTime === '')) {
+	if (alarms.some(alarm => alarm.time === alarmTime) || (alarmTime === undefined || alarmTime === "")) {
 		return;
 	}
 	let alarm = new Alarm(alarmTime, alarmSound);
@@ -85,28 +85,71 @@ function clearAllAlarms() {
 function updateAlarmList() {
 	let alarmList = document.getElementById('alarmList');
 	alarmList.innerHTML = '';
+
+	let tableHeaderRow = document.createElement('tr');
+
+	let tableHeaderColumn1 = document.createElement('th');
+	tableHeaderColumn1.innerText = 'Time';
+	tableHeaderColumn1.className = 'timeColumn';
+
+	let tableHeaderColumn2 = document.createElement('th');
+	tableHeaderColumn2.innerText = 'Sound';
+	tableHeaderColumn2.className = 'soundColumn';
+
+	let tableHeaderColumn3 = document.createElement('th');
+	// tableHeaderColumn3.innerText = 'Delete?';
+	tableHeaderColumn3.className = 'deleteColumn';
+	
+	tableHeaderRow.append(tableHeaderColumn1, tableHeaderColumn2, tableHeaderColumn3);
+	alarmList.appendChild(tableHeaderRow);
+
 	let now = new Date();
 	let currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
 	for (let i = 0; i < alarms.length; i++) {
-		let listItem = document.createElement('li');
+		let listItem = document.createElement('tr');
+
 		let timeParts = alarms[i].time.split(':');
 		let hours = timeParts[0] % 12 || 12;
 		let minutes = timeParts[1];
 		let ampm = timeParts[0] >= 12 ? 'PM' : 'AM';
-		listItem.textContent = hours + ':' + minutes + ' ' + ampm;
+
+		let timeElement = document.createElement('td');
+		let timeSpan = document.createElement('span');
+		timeSpan.textContent = hours + ':' + minutes + ' ' + ampm;
+		timeElement.append(timeSpan);
+
+		listItem.append(timeElement)
+
 		if (alarms[i].time <= currentTime) {
-			listItem.style.textDecoration = 'line-through';
+			listItem.classList.add('inactive')
+			listItem.classList.remove('active')
+		} else {
+			listItem.classList.remove('inactive')
+			listItem.classList.add('active')
 		}
+
+		let soundElement = document.createElement('td')
+		let soundItem = document.createElement('span')
+		soundItem.textContent = alarms[i].sound
+		soundElement.append(soundItem)
+		listItem.append(soundElement)
+
+		let deleteElement = document.createElement('td')
 		let deleteButton = document.createElement('button');
 		deleteButton.textContent = 'Delete';
 		deleteButton.onclick = function() {
-			alarms[i].cancel();
-			alarms.splice(i, 1);
-			sortAlarms();
-			saveAlarms();
-			updateAlarmList();
+			if (confirm("Are you sure you wish to delete this alarm for " + hours + ':' + minutes + ' ' + ampm + "?")) {
+				alarms[i].cancel();
+				alarms.splice(i, 1);
+				sortAlarms();
+				saveAlarms();
+				updateAlarmList();
+			}
 		};
-		listItem.appendChild(deleteButton);
+		deleteElement.append(deleteButton)
+		listItem.append(deleteElement)
+
 		alarmList.appendChild(listItem);
 	}
 }
@@ -132,4 +175,21 @@ window.onload = function() {
     let hours = now.getHours().toString().padStart(2, '0');
     let minutes = now.getMinutes().toString().padStart(2, '0');
     document.getElementById('alarmTime').value = hours + ':' + minutes;
+
+	displayTime();
+	setInterval(displayTime, 100);
 };
+
+function displayTime() {
+	var date = new Date();
+	var hours = date.getHours();
+	var minutes = date.getMinutes();
+	var seconds = date.getSeconds();
+	var ampm = hours >= 12 ? 'PM' : 'AM';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	minutes = minutes < 10 ? '0'+minutes : minutes;
+	seconds = seconds < 10 ? '0'+seconds : seconds;
+	var strTime = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+	document.getElementById('clock').textContent = strTime;
+}
